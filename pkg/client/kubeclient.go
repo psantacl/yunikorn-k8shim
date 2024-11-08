@@ -138,10 +138,9 @@ func (nc SchedulerKubeClient) Create(pod *v1.Pod) (*v1.Pod, error) {
 }
 
 func (nc SchedulerKubeClient) Delete(pod *v1.Pod) error {
-	// TODO make this configurable for pods
-	gracefulSeconds := int64(3)
+	// Roblox: NOPE gracefulSeconds := int64(3)
 	if err := nc.clientSet.CoreV1().Pods(pod.Namespace).Delete(context.Background(), pod.Name, apis.DeleteOptions{
-		GracePeriodSeconds: &gracefulSeconds,
+		// GracePeriodSeconds: &gracefulSeconds,
 	}); err != nil {
 		log.Log(log.ShimClient).Warn("failed to delete pod",
 			zap.String("namespace", pod.Namespace),
