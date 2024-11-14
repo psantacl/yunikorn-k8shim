@@ -133,7 +133,7 @@ func (p *predicateManagerImpl) PreemptionPredicates(pod *v1.Pod, node *framework
 	s, plugin, skip := p.runPreFilterPlugins(ctx, state, *p.allocationPreFilters, pod, node)
 	if !s.IsSuccess() && !s.IsSkip() {
 		// prefilter check failed, log and return
-		log.Log(log.ShimPredicates).Info("PSC PreFilter check failed during preemption check",
+		log.Log(log.ShimPredicates).Info("PSC SHIM PreFilter check failed during preemption check",
 			zap.String("podUID", string(pod.UID)),
 			zap.String("plugin", plugin),
 			zap.String("message", s.Message()))
@@ -159,7 +159,7 @@ func (p *predicateManagerImpl) PreemptionPredicates(pod *v1.Pod, node *framework
 	}
 
 	// no fit, log and return
-	log.Log(log.ShimPredicates).Info("PSC Filter checks failed during preemption check, no fit",
+	log.Log(log.ShimPredicates).Info("PSC SHIM Filter checks failed during preemption check, no fit",
 		zap.String("podUID", string(pod.UID)),
 		zap.String("nodeID", node.Node().Name))
 	return -1, false
