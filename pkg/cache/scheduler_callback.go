@@ -221,6 +221,9 @@ func (callback *AsyncRMCallback) Predicates(args *si.PredicatesArgs) error {
 func (callback *AsyncRMCallback) PreemptionPredicates(args *si.PreemptionPredicatesArgs) *si.PreemptionPredicatesResponse {
 	index, ok := callback.context.IsPodFitNodeViaPreemption(args.AllocationKey, args.NodeID, args.PreemptAllocationKeys, int(args.StartIndex))
 	if !ok {
+		log.Log(log.ShimRMCallback).Info("PSC SHIM: IsPodFitNodeViaPreemption failed",
+			zap.Any("index", index),
+			zap.Any("ok", ok))
 		index = -1
 	}
 	return &si.PreemptionPredicatesResponse{

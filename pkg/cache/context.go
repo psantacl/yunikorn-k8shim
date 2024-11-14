@@ -674,6 +674,13 @@ func (ctx *Context) IsPodFitNodeViaPreemption(name, node string, allocations []s
 		return startIndex, ok
 	}
 
+	//log allocations here if they are not empty?????
+	log.Log(log.ShimContext).Info("PSC SHIM: start IsPodFitNodeViaPreemption",
+		zap.Any("name", name),
+		zap.Any("node", node),
+		zap.Any("allocations", allocations),
+		zap.Any("startIndex", startIndex))
+
 	ctx.lock.RLock()
 	defer ctx.lock.RUnlock()
 	if pod, ok := ctx.schedulerCache.GetPod(name); ok {
@@ -689,6 +696,8 @@ func (ctx *Context) IsPodFitNodeViaPreemption(name, node string, allocations []s
 				if victim, ok := ctx.schedulerCache.GetPodNoLock(uid); ok {
 					victims = append(victims, victim)
 				} else {
+					log.Log(log.ShimContext).Info("PSC SHIM: no pod NO LOCK found in context for allocation",
+						zap.Any("uid", uid))
 					// if pod isn't found, add a placeholder so that the list is still the same size
 					victims = append(victims, nil)
 				}
@@ -698,7 +707,17 @@ func (ctx *Context) IsPodFitNodeViaPreemption(name, node string, allocations []s
 			if index, ok := ctx.predManager.PreemptionPredicates(pod, targetNode, victims, startIndex); ok {
 				return index, ok
 			}
+		} else {
+			log.Log(log.ShimContext).Info("PSC SHIM: no node found in context",
+				zap.Any("name", name),
+				zap.Any("node", node),
+				zap.Any("allocations", allocations))
 		}
+	} else {
+		log.Log(log.ShimContext).Info("PSC SHIM: no pod found in context",
+			zap.Any("name", name),
+			zap.Any("node", node),
+			zap.Any("allocations", allocations))
 	}
 	return -1, false
 }
