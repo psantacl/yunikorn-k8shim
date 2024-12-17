@@ -429,6 +429,7 @@ func (ctx *Context) DeletePod(obj interface{}) {
 func (ctx *Context) deleteYuniKornPod(pod *v1.Pod) {
 	ctx.lock.Lock()
 	defer ctx.lock.Unlock()
+	log.Log(log.ShimContext).Info("schaffer(deleteYuniKornPod): removing pod from cache", zap.String("podName", pod.Name))
 	if taskMeta, ok := getTaskMetadata(pod); ok {
 		if app := ctx.getApplication(taskMeta.ApplicationID); app != nil {
 			ctx.notifyTaskComplete(taskMeta.ApplicationID, taskMeta.TaskID)

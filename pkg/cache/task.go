@@ -501,13 +501,22 @@ func (task *Task) beforeTaskCompleted() {
 func (task *Task) releaseAllocation() {
 	// scheduler api might be nil in some tests
 	if task.context.apiProvider.GetAPIs().SchedulerAPI != nil {
-		log.Log(log.ShimCacheTask).Debug("prepare to send release request",
+		log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request",
+			zap.String("allocationID", task.allocationID),
 			zap.String("applicationID", task.applicationID),
 			zap.String("taskID", task.taskID),
 			zap.String("taskAlias", task.alias),
-			zap.String("allocationID", task.allocationID),
 			zap.String("task", task.GetTaskState()),
-			zap.String("terminationType", task.terminationType))
+			zap.String("terminationType", task.terminationType),
+			zap.String("podName", task.GetTaskPod().Name))
+
+		// log.Log(log.ShimCacheTask).Debug("prepare to send release request",
+		// 	zap.String("applicationID", task.applicationID),
+		// 	zap.String("taskID", task.taskID),
+		// 	zap.String("taskAlias", task.alias),
+		// 	zap.String("allocationID", task.allocationID),
+		// 	zap.String("task", task.GetTaskState()),
+		// 	zap.String("terminationType", task.terminationType))
 
 		// The message depends on current task state, generate requests accordingly.
 		// If allocated send an AllocationReleaseRequest,
@@ -519,11 +528,17 @@ func (task *Task) releaseAllocation() {
 			releaseRequest = common.CreateReleaseRequestForTask(task.applicationID, task.taskID, task.allocationID, task.application.partition, task.terminationType)
 		default:
 			if task.allocationID == "" {
-				log.Log(log.ShimCacheTask).Warn("BUG: task allocation allocationID is empty on release",
+				// log.Log(log.ShimCacheTask).Warn("BUG: task allocation allocationID is empty on release",
+				// 	zap.String("applicationID", task.applicationID),
+				// 	zap.String("taskID", task.taskID),
+				// 	zap.String("taskAlias", task.alias),
+				// 	zap.String("task", task.GetTaskState()))
+				log.Log(log.ShimCacheTask).Warn("schaffer(releaseAllocation) BUG: task allocation allocationID is empty on release",
 					zap.String("applicationID", task.applicationID),
 					zap.String("taskID", task.taskID),
 					zap.String("taskAlias", task.alias),
-					zap.String("task", task.GetTaskState()))
+					zap.String("task", task.GetTaskState()),
+					zap.String("podName", task.pod.GetName()))
 			}
 			releaseRequest = common.CreateReleaseRequestForTask(
 				task.applicationID, task.taskID, task.allocationID, task.application.partition, task.terminationType)
@@ -535,7 +550,12 @@ func (task *Task) releaseAllocation() {
 				zap.Int("numOfAllocationsToRelease", len(releaseRequest.Releases.AllocationsToRelease)))
 		}
 		if err := task.context.apiProvider.GetAPIs().SchedulerAPI.UpdateAllocation(releaseRequest); err != nil {
-			log.Log(log.ShimCacheTask).Debug("failed to send scheduling request to scheduler", zap.Error(err))
+			// log.Log(log.ShimCacheTask).Debug("failed to send scheduling request to scheduler", zap.Error(err))
+
+			log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): failed to send scheduling request to scheduler",
+				zap.Error(err),
+				zap.String("allocationID", task.allocationID),
+				zap.String("podName", task.pod.GetName()))
 		}
 	}
 }
