@@ -501,23 +501,24 @@ func (task *Task) beforeTaskCompleted() {
 func (task *Task) releaseAllocation() {
 	// scheduler api might be nil in some tests
 	if task.context.apiProvider.GetAPIs().SchedulerAPI != nil {
-		log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request",
-			zap.String("allocationID", task.allocationID),
-			zap.String("applicationID", task.applicationID),
-			zap.String("taskID", task.taskID),
-			zap.String("taskAlias", task.alias),
-			zap.String("allocationID", task.allocationID),
-			zap.String("task", task.GetTaskState()),
-			zap.String("terminationType", task.terminationType),
-			zap.String("podName", task.GetTaskPod().Name))
-
-		// log.Log(log.ShimCacheTask).Debug("prepare to send release request",
+		// log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request",
+		// 	zap.String("allocationID", task.allocationID),
 		// 	zap.String("applicationID", task.applicationID),
 		// 	zap.String("taskID", task.taskID),
 		// 	zap.String("taskAlias", task.alias),
 		// 	zap.String("allocationID", task.allocationID),
 		// 	zap.String("task", task.GetTaskState()),
-		// 	zap.String("terminationType", task.terminationType))
+		// 	zap.String("terminationType", task.terminationType),
+		// 	zap.String("podName", task.GetTaskPod().Name))
+		log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request")
+
+		log.Log(log.ShimCacheTask).Debug("prepare to send release request",
+			zap.String("applicationID", task.applicationID),
+			zap.String("taskID", task.taskID),
+			zap.String("taskAlias", task.alias),
+			zap.String("allocationID", task.allocationID),
+			zap.String("task", task.GetTaskState()),
+			zap.String("terminationType", task.terminationType))
 
 		// The message depends on current task state, generate requests accordingly.
 		// If allocated send an AllocationReleaseRequest,
@@ -533,7 +534,7 @@ func (task *Task) releaseAllocation() {
 					zap.String("applicationID", task.applicationID),
 					zap.String("taskID", task.taskID),
 					zap.String("taskAlias", task.alias),
-					zap.String("podName", task.pod.GetName()),
+					// zap.String("podName", task.pod.GetName()),
 					zap.String("task", task.GetTaskState()))
 			}
 			releaseRequest = common.CreateReleaseRequestForTask(
@@ -547,10 +548,11 @@ func (task *Task) releaseAllocation() {
 		}
 		if err := task.context.apiProvider.GetAPIs().SchedulerAPI.UpdateAllocation(releaseRequest); err != nil {
 			// log.Log(log.ShimCacheTask).Debug("failed to send scheduling request to scheduler", zap.Error(err))
-			log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): failed to send scheduling request to scheduler",
-				zap.Error(err),
-				zap.String("allocationID", task.allocationID),
-				zap.String("podName", task.pod.GetName()))
+			// log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): failed to send scheduling request to scheduler",
+			// 	zap.Error(err),
+			// 	zap.String("allocationID", task.allocationID),
+			// 	zap.String("podName", task.pod.GetName()))
+			log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): failed to send scheduling request to scheduler")
 		}
 	}
 }
