@@ -507,8 +507,7 @@ func (task *Task) releaseAllocation() {
 			zap.String("taskID", task.taskID),
 			zap.String("taskAlias", task.alias),
 			zap.String("task", task.GetTaskState()),
-			zap.String("terminationType", task.terminationType),
-			zap.String("podName", task.GetTaskPod().Name))
+			zap.String("terminationType", task.terminationType))
 		// log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request")
 
 		log.Log(log.ShimCacheTask).Debug("prepare to send release request",
