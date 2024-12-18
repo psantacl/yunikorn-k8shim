@@ -1323,7 +1323,8 @@ func (ctx *Context) TaskEventHandler() func(obj interface{}) {
 		if event, ok := obj.(events.TaskEvent); ok {
 			task := ctx.getTask(event.GetApplicationID(), event.GetTaskID())
 			if task == nil {
-				log.Log(log.ShimContext).Error("failed to handle application event")
+				log.Log(log.ShimContext).Error("failed to handle application event because task is missing",
+					zap.Any("event", event))
 				return
 			}
 			if task.canHandle(event) {
