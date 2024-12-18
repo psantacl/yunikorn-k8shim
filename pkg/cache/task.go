@@ -501,16 +501,15 @@ func (task *Task) beforeTaskCompleted() {
 func (task *Task) releaseAllocation() {
 	// scheduler api might be nil in some tests
 	if task.context.apiProvider.GetAPIs().SchedulerAPI != nil {
-		// log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request",
-		// 	zap.String("allocationID", task.allocationID),
-		// 	zap.String("applicationID", task.applicationID),
-		// 	zap.String("taskID", task.taskID),
-		// 	zap.String("taskAlias", task.alias),
-		// 	zap.String("allocationID", task.allocationID),
-		// 	zap.String("task", task.GetTaskState()),
-		// 	zap.String("terminationType", task.terminationType),
-		// 	zap.String("podName", task.GetTaskPod().Name))
-		log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request")
+		log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request",
+			zap.String("allocationID", task.allocationID),
+			zap.String("applicationID", task.applicationID),
+			zap.String("taskID", task.taskID),
+			zap.String("taskAlias", task.alias),
+			zap.String("task", task.GetTaskState()),
+			zap.String("terminationType", task.terminationType),
+			zap.String("podName", task.GetTaskPod().Name))
+		// log.Log(log.ShimCacheTask).Info("schaffer(releaseAllocation): prepare to send release request")
 
 		log.Log(log.ShimCacheTask).Debug("prepare to send release request",
 			zap.String("applicationID", task.applicationID),
